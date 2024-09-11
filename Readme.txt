@@ -14,7 +14,7 @@ Moreover, this project is intended to be as flexible as possible towards:
 3D NOISE:
 
 taken from: https://rosettacode.org/wiki/Perlin_noise#Zig
-Adapted for Zig versio 0.13.0
+Adapted for Zig version 0.13.0
 
 USAGE:
 
