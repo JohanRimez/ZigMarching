@@ -1,6 +1,6 @@
 const std = @import("std");
 const stdout = std.debug;
-const sdl = @import("SDLimport.zig");
+const sdl = @import("cImport.zig");
 const LoadTextureFromMem = @import("LoadResource.zig").LoadTextureFromMem;
 var gpa = std.heap.GeneralPurposeAllocator(.{}){};
 pub const allocator = gpa.allocator();
@@ -39,27 +39,37 @@ pub fn InitRandomizer() !void {
 
 pub fn main() !void {
     // SDL Initialisation
-    if (sdl.SDL_Init(sdl.SDL_INIT_TIMER | sdl.SDL_INIT_VIDEO) != 0) {
+    if (sdl.SDL_Init(sdl.SDL_INIT_VIDEO) != 0) {
         stdout.print("SDL initialisation error: {s}\n", .{sdl.SDL_GetError()});
         return error.sdl_initialisationerror;
     }
     defer sdl.SDL_Quit();
 
+    // Prepare full screen (stable alternative for linux)
+    var dm: sdl.SDL_DisplayMode = undefined;
+    if (sdl.SDL_GetDisplayMode(0, 0, &dm) != 0) {
+        std.debug.print("SDL GetDisplayMode error: {s}\n", .{sdl.SDL_GetError()});
+        return error.sdl_initialisationerror;
+    }
     const window: *sdl.SDL_Window = sdl.SDL_CreateWindow(
-        "SDL main window",
+        "Game window",
         0,
         0,
-        800,
-        600,
-        sdl.SDL_WINDOW_FULLSCREEN_DESKTOP,
+        dm.w,
+        dm.h,
+        sdl.SDL_WINDOW_BORDERLESS | sdl.SDL_WINDOW_MAXIMIZED,
     ) orelse {
-        stdout.print("SDL window creation failed: {s}\n", .{sdl.SDL_GetError()});
-        return error.sdl_windowcreationfailed;
+        std.debug.print("SDL window creation failed: {s}\n", .{sdl.SDL_GetError()});
+        return error.sdl_initialisationerror;
     };
     defer sdl.SDL_DestroyWindow(window);
     sdl.SDL_GetWindowSize(window, @ptrCast(&canvasW), @ptrCast(&canvasH));
     stdout.print("Window dimensions: {}x{}\n", .{ canvasW, canvasH });
-    const renderer = sdl.SDL_CreateRenderer(window, -1, sdl.SDL_RENDERER_ACCELERATED) orelse {
+    const renderer = sdl.SDL_CreateRenderer(
+        window,
+        -1,
+        sdl.SDL_RENDERER_ACCELERATED | sdl.SDL_RENDERER_PRESENTVSYNC,
+    ) orelse {
         stdout.print("SDL renderer creation failed: {s}\n", .{sdl.SDL_GetError()});
         return error.sdl_renderercreationfailed;
     };

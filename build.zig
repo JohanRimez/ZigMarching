@@ -4,7 +4,7 @@
 const programName = "ZigMarching";
 const mainEntry = "MarchingMain.zig";
 
-// To compile for linux on a windows machine: add libSD2.a & libSDL2.so to the project root
+// To compile for linux on a windows machine: add the needed .a & .so to the project root
 
 // Up till the moment the "Linux Native Build bug" (https://github.com/ziglang/zig/issues/21376) is fixed, compilation in Linux requires
 // the explicit target parameter

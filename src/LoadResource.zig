@@ -1,6 +1,6 @@
 const std = @import("std");
 const stdout = std.debug;
-const sdl = @import("SDLimport.zig");
+const sdl = @import("cImport.zig");
 
 pub fn LoadTextureFromMem(renderer: *sdl.SDL_Renderer, pTexture: [:0]const u8) !*sdl.SDL_Texture {
     const rwOps = sdl.SDL_RWFromConstMem(@ptrCast(pTexture), @intCast(pTexture.len));
